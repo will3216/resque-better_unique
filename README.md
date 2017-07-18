@@ -25,11 +25,11 @@ Include this plugin into your job class and call the `unique` method
 ```ruby
 class MyWorker
   include Resque::Plugins::BetterUnique
-  unique :while_executing, timeout: 5.minutes
+  unique_job :while_executing, timeout: 5.minutes
 end
 ```
 
-The unique method takes up to two arguments:
+The unique_job method takes up to two arguments:
 - mode: (default=:until_executed)
   * while_executing: only one distinct job can be processed at a time
   * until_executing: only one job can be queued at a time
@@ -38,6 +38,61 @@ The unique method takes up to two arguments:
 - options: Hash of options
   * timeout - integer or object that responds to to_i - How long should a lock live
   * unique_args - a proc or a symbol which takes the arguments of perform and returns the arguments that should be used to determine uniqueness
+
+### Examples:
+Specify method to define unique args:
+```ruby
+class MyWorker
+  include Resque::Plugins::BetterUnique
+  unique_job :while_executing, timeout: 5.minutes, unique_args: unique_job_arguments
+
+  def self.unique_job_arguments(*args)
+    [args[0], args[3]]
+  end
+end
+```
+
+Specify Proc to define unique args:
+```ruby
+class MyWorker
+  include Resque::Plugins::BetterUnique
+  unique_job :while_executing, timeout: 5.minutes, unique_args: ->(*args) { [args[0], args[3]] }
+end
+```
+
+Override lock_key method:
+```ruby
+class MyWorker
+  include Resque::Plugins::BetterUnique
+  unique_job :while_executing, timeout: 5.minutes
+
+  def self.lock_key(*args)
+    "lock:my_lock:#{args.to_s}"
+  end
+end
+```
+
+Clear lock for a single job:
+```ruby
+class MyWorker
+  include Resque::Plugins::BetterUnique
+  unique_job :until_executed, timeout: 5.minutes
+end
+
+Resque.enqueue(MyWorker, {some: :args})
+MyWorker.release_lock({some: :args})
+```
+
+Clear all locks for a worker class:
+```ruby
+class MyWorker
+  include Resque::Plugins::BetterUnique
+  unique_job :while_executing, timeout: 5.minutes
+end
+100.times { Resque.enqueue(MyWorker, rand(1000))}
+MyWorker.release_all_locks
+```
+NOTE: requires redis-server >= 2.8
 
 ## Development
 
