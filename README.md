@@ -25,7 +25,7 @@ Include this plugin into your job class and call the `unique` method
 ```ruby
 class MyWorker
   include Resque::Plugins::BetterUnique
-  unique :while_executing
+  unique :while_executing, timeout: 5.minutes
 end
 ```
 
