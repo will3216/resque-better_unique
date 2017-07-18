@@ -176,4 +176,10 @@ describe Resque::Plugins::BetterUnique do
     end
   end
 
+  describe 'plugin compliance' do
+    it 'should not raise any errors' do
+      expect { Resque::Plugin.lint(Resque::Plugins::BetterUnique)}.not_to raise_error
+    end
+  end
+
 end
