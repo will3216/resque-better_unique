@@ -1,8 +1,8 @@
 # Resque::BetterUnique
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/resque/better_unique`. To experiment with that code, run `bin/console` for an interactive prompt.
+There are currently a number of resque plugins that provide this functionality in some form or another, but one thing they all lack is the ability to control how the unique constraint is defined. Sometimes, a job should only be unique until a worker begins processing it, in other cases you will want the job to remain unique until the job completes, or maybe even long after the job has completed. This allows you to do all of the above and more with a single gem.
 
-TODO: Delete this and the text above, and describe your gem
+The functionality of this gem is based on the sidekiq equivalent [sidekiq-unique-jobs](https://github.com/mhenrixon/sidekiq-unique-jobs).
 
 ## Installation
 
@@ -21,8 +21,23 @@ Or install it yourself as:
     $ gem install resque-better_unique
 
 ## Usage
+Include this plugin into your job class and call the `unique` method
+```ruby
+class MyWorker
+  include Resque::Plugins::BetterUnique
+  unique :while_executing
+end
+```
 
-TODO: Write usage instructions here
+The unique method takes up to two arguments:
+- mode: (default=:until_executed)
+  * while_executing: only one distinct job can be processed at a time
+  * until_executing: only one job can be queued at a time
+  * until_executed: only one job can be queued or processed at a time
+  * until_timeout: only one job can be queued or processed in a given time period
+- options: Hash of options
+  * timeout - integer or object that responds to to_i - How long should a lock live
+  * unique_args - a proc or a symbol which takes the arguments of perform and returns the arguments that should be used to determine uniqueness
 
 ## Development
 
@@ -33,4 +48,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/resque-better_unique.
-
