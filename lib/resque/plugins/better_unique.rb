@@ -12,7 +12,7 @@ module Resque
         # passed the same arguments as `perform`, that is, your job's
         # payload.
         def lock_key(*args)
-          unique_args = unique_options[:unique_args]
+          unique_args = unique_job_options[:unique_args]
           lock_args = case unique_args
           when Proc
             unique_args.call(*args)
@@ -32,24 +32,24 @@ module Resque
           Resque.redis.exists(lock_key(*args))
         end
 
-        def unique_options
-          @unique_options || {}
+        def unique_job_options
+          @unique_job_options || {}
         end
 
-        def unique_options=(options)
-          @unique_options = options
+        def unique_job_options=(options)
+          @unique_job_options = options
         end
 
-        def unique_mode
-          unique_options[:mode].to_sym || :none
+        def unique_job_mode
+          unique_job_options[:mode].to_sym || :none
         end
 
-        def unique(mode=:until_executed, options={})
-          self.unique_options = {mode: mode}.merge(options)
+        def unique_job(mode=:until_executed, options={})
+          self.unique_job_options = {mode: mode}.merge(options)
         end
 
         def before_enqueue_unique_lock(*args)
-          if [:until_executing, :until_executed, :until_timeout].include?(unique_mode)
+          if [:until_executing, :until_executed, :until_timeout].include?(unique_job_mode)
             return false if locked?(*args)
             set_lock(*args)
           end
@@ -57,7 +57,7 @@ module Resque
         end
 
         def around_perform_unique_lock(*args)
-          case unique_mode
+          case unique_job_mode
           when :until_executing
             release_lock(*args)
           when :while_executing
@@ -65,7 +65,7 @@ module Resque
           end
           yield
         ensure
-          if [:until_executed, :while_executing].include?(unique_mode)
+          if [:until_executed, :while_executing].include?(unique_job_mode)
             release_lock(*args)
           end
         end
@@ -76,8 +76,8 @@ module Resque
 
         def set_lock(*args)
           is_now_locked = Resque.redis.setnx(lock_key(*args), true)
-          if is_now_locked && unique_options[:timeout]
-            Resque.redis.expire(lock_key(*args), unique_options[:timeout].to_i)
+          if is_now_locked && unique_job_options[:timeout]
+            Resque.redis.expire(lock_key(*args), unique_job_options[:timeout].to_i)
           end
           is_now_locked
         end

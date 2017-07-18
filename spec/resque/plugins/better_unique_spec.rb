@@ -37,7 +37,7 @@ describe Resque::Plugins::BetterUnique do
   let(:options) { {} }
 
   before do
-    TestWorker.unique(mode, options)
+    TestWorker.unique_job(mode, options)
   end
 
   describe 'mode' do
