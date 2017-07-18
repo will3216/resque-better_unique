@@ -92,7 +92,7 @@ end
 100.times { Resque.enqueue(MyWorker, rand(1000))}
 MyWorker.release_all_locks
 ```
-NOTE: requires redis-server >= 2.8
+NOTE: `release_all_locks` requires redis-server >= 2.8. Only removes locks for the class on which it was called.
 
 ## Development
 
