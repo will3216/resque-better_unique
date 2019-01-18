@@ -23,6 +23,7 @@ Or install it yourself as:
 ## Usage
 Include this plugin into your job class and call the `unique` method
 ```ruby
+require 'resque/plugins/better_unique'
 class MyWorker
   include Resque::Plugins::BetterUnique
   unique_job :while_executing, timeout: 5.minutes
