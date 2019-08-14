@@ -47,7 +47,9 @@ class MyWorker
   include Resque::Plugins::BetterUnique
   unique_job :while_executing, timeout: 5.minutes, unique_args: unique_job_arguments
 
-  def self.unique_job_arguments(*args)
+  private
+
+  def unique_job_arguments(*args)
     [args[0], args[3]]
   end
 end
