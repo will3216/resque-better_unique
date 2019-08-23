@@ -44,6 +44,7 @@ module Resque
           (unique_job_options[:mode] && unique_job_options[:mode].to_sym) || :none
         end
 
+        # :nocov:
         if RUBY_VERSION =~ /2\.\d+\.\d+/
           def unique_job(mode=:until_executed, **options)
             self.unique_job_options = {mode: mode}.merge(options)
@@ -53,6 +54,7 @@ module Resque
             self.unique_job_options = {mode: mode}.merge(options)
           end
         end
+        # :nocov:
 
         def before_enqueue_unique_lock(*args)
           if [:until_executing, :until_executed, :until_timeout].include?(unique_job_mode)
