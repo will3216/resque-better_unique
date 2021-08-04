@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'resque-better_unique'
   spec.version       = Resque::Plugins::BetterUnique::VERSION
   spec.authors       = ['Will Bryant']
-  spec.email         = ['william@tout.com']
+  spec.email         = ['will.t.bryant@gmail.com']
 
   spec.summary       = %q{A resque plugin for better control over unique jobs}
   spec.description   = %q{There are a number of plugins which allow you define unique jobs, but each only handle on use-case. This allows you have full control over how uniqueness is defined}
@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler', '~> 1.14'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'bundler', '>= 2.2.10'
+  spec.add_development_dependency 'rake', '>= 12.3.3'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'resque'
   spec.add_development_dependency 'redis'

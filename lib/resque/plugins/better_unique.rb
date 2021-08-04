@@ -29,7 +29,7 @@ module Resque
         end
 
         def locked?(*args)
-          Resque.redis.exists(lock_key(*args))
+          Resque.redis.respond_to?(:exists?) ? Resque.redis.exists?(lock_key(*args)) : Resque.redis.exists(lock_key(*args))
         end
 
         def unique_job_options
@@ -45,7 +45,7 @@ module Resque
         end
 
         # :nocov:
-        if RUBY_VERSION =~ /2\.\d+\.\d+/
+        if RUBY_VERSION =~ /[2|3]\.\d+\.\d+/
           def unique_job(mode=:until_executed, **options)
             self.unique_job_options = {mode: mode}.merge(options)
           end
