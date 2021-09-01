@@ -45,7 +45,7 @@ Specify method to define unique args:
 ```ruby
 class MyWorker
   include Resque::Plugins::BetterUnique
-  unique_job :while_executing, timeout: 5.minutes, unique_args: unique_job_arguments
+  unique_job :while_executing, timeout: 5.minutes, unique_args: :unique_job_arguments
 
   private
 
